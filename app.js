@@ -2,15 +2,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+mongoose.set('strictQuery', true);
+mongoose.connect('mongodb://localhost:27017/mestodb')
+  .then(() => {
+    console.log('Соединение с MongoDB установлено');
+  })
+  .catch((err) => console.log(`Возникла ошибка при соединении с MongoDB: ${err}`));
+
 const app = express();
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
 
 const { PORT = 3000 } = process.env;
 
-app.listen(PORT, () => {
-  console.log(`Listening to port ${PORT}`);
+app.listen(PORT, (err) => {
+  err ? console.log(`В процессе соединения с портом возникла ошибка: ${err}`) : console.log(`Соединение с портом № ${PORT} успешно установлено`);
 });
