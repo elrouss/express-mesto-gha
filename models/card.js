@@ -2,48 +2,42 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
+const { ObjectId } = mongoose.Schema.Types;
 
-// TODO => fix: валидация (см. models -> user) + add: vaersion key (см. там же)
-
-const cardSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-    validate: {
-      validator(v) {
-        return v >= 2 && v <= 30;
+const cardSchema = new Schema(
+  {
+    name: {
+      type: String,
+      validate: {
+        validator: ({ length }) => length >= 2 && length <= 30,
+        message: 'Имя карточки должно быть длиной от 2 до 30 символов',
       },
-      message: 'Имя карточки должно быть длиной от 2 до 30 символов',
+    },
+
+    link: {
+      type: String,
+      required: true,
+    },
+
+    owner: {
+      type: ObjectId,
+      ref: 'user',
+      required: true,
+    },
+
+    // likes: [{
+    //   type: mongoose.ObjectId,
+    //   default: [],
+    // }],
+
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
-
-  link: {
-    type: String,
-    required: true,
+  {
+    versionKey: false,
   },
-
-  owner: {
-    type: mongoose.ObjectId,
-    required: true,
-    validate: {
-      validator(v) {
-        return v;
-      },
-      message: 'Отсутствует идентификатор автора карточки',
-    },
-  },
-
-  likes: [{
-    type: mongoose.ObjectId,
-    default: [],
-  }],
-
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+);
 
 module.exports = mongoose.model('card', cardSchema);

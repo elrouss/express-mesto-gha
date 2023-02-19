@@ -2,14 +2,14 @@ const User = require('../models/user');
 
 // TODO => refactor: вынести в отдельную функцию (DRY)
 
-function receiveUsersData(req, res) {
+function receiveUsers(req, res) {
   User
     .find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе получения данных пользователей: ${err}` }));
 }
 
-function receiveUserData(req, res) {
+function receiveUser(req, res) {
   const { id } = req.params;
 
   User
@@ -28,7 +28,7 @@ function createUser(req, res) {
 }
 
 module.exports = {
-  receiveUsersData,
-  receiveUserData,
+  receiveUsers,
+  receiveUser,
   createUser,
 };

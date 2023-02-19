@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const router = require('express').Router();
-const { receiveUsersData, receiveUserData, createUser } = require('../controllers/users');
+const { receiveUsers, receiveUser, createUser } = require('../controllers/users');
 
-router.get('/', receiveUsersData);
-router.get('/:id', receiveUserData);
+router.get('/', receiveUsers);
+router.get('/:id', receiveUser);
 router.post('/', createUser);
 
 module.exports = router;
