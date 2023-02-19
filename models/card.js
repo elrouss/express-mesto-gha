@@ -1,27 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
 
-const cardOwner = new mongoose.Schema({
-  owner: {
-    type: mongoose.ObjectId,
-    required: true,
-    validate: {
-      validator(v) {
-        return v;
-      },
-      message: 'Отсутствует идентификатор автора карточки',
-    },
-  },
-});
+const { Schema } = mongoose;
 
-const cardLikesOwners = new mongoose.Schema({
-  likes: [{
-    type: mongoose.ObjectId,
-    default: [],
-  }],
-});
+// TODO => fix: валидация (см. models -> user) + add: vaersion key (см. там же)
 
-const cardSchema = new mongoose.Schema({
+const cardSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -40,9 +24,21 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
 
-  owner: cardOwner,
+  owner: {
+    type: mongoose.ObjectId,
+    required: true,
+    validate: {
+      validator(v) {
+        return v;
+      },
+      message: 'Отсутствует идентификатор автора карточки',
+    },
+  },
 
-  likes: cardLikesOwners,
+  likes: [{
+    type: mongoose.ObjectId,
+    default: [],
+  }],
 
   createdAt: {
     type: Date,
