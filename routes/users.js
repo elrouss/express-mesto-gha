@@ -1,9 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const router = require('express').Router();
-const { receiveUsers, receiveUser, createUser } = require('../controllers/users');
+const {
+  createUser,
+  getUsersInfo,
+  getUserInfo,
+  setUserInfo,
+  setUserAvatar,
+} = require('../controllers/users');
 
-router.get('/', receiveUsers);
-router.get('/:id', receiveUser);
 router.post('/', createUser);
+
+router.get('/', getUsersInfo);
+router.get('/:id', getUserInfo);
+
+router.patch('/me', setUserInfo);
+router.patch('/me/avatar', setUserAvatar);
 
 module.exports = router;

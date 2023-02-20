@@ -20,15 +20,14 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/users', routeUsers);
-
 app.use((req, res, next) => {
   req.user = {
-    _id: '63f1c6f0b42c67e928e67f7f',
+    _id: '63f1c61db42c67e928e67f7d',
   };
 
   next();
 });
+app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
 app.listen(PORT, (err) => {
