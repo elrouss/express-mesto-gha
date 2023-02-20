@@ -11,12 +11,54 @@ function receiveCards(req, res) {
 
 function createCard(req, res) {
   const { name, link } = req.body;
-  const { _id } = req.user;
+  const { _id: userId } = req.user;
 
   Card
-    .create({ name, link, owner: _id })
+    .create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе создания новой карточки ${err}` }));
+}
+
+function likeCard(req, res) {
+  const { cardId } = req.params;
+  const { _id: userId } = req.user;
+
+  Card
+    .findByIdAndUpdate(
+      cardId,
+      {
+        $addToSet: {
+          likes: userId,
+        },
+      },
+      {
+        new: true,
+        upsert: false,
+      },
+    )
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка при добавлении лайка: ${err}` }));
+}
+
+function dislikeCard(req, res) {
+  const { cardId } = req.params;
+  const { _id: userId } = req.user;
+
+  Card
+    .findByIdAndUpdate(
+      cardId,
+      {
+        $pull: {
+          likes: userId,
+        },
+      },
+      {
+        new: true,
+        upsert: false,
+      },
+    )
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка при снятии лайка: ${err}` }));
 }
 
 function deleteCard(req, res) {
@@ -31,5 +73,7 @@ function deleteCard(req, res) {
 module.exports = {
   receiveCards,
   createCard,
+  likeCard,
+  dislikeCard,
   deleteCard,
 };

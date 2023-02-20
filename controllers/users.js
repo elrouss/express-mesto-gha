@@ -29,11 +29,11 @@ function getUserInfo(req, res) {
 
 function setUserInfo(req, res) {
   const { name, about } = req.body;
-  const { _id } = req.user;
+  const { _id: userId } = req.user;
 
   User
     .findByIdAndUpdate(
-      _id,
+      userId,
       {
         name,
         about,
@@ -50,11 +50,11 @@ function setUserInfo(req, res) {
 
 function setUserAvatar(req, res) {
   const { avatar } = req.body;
-  const { _id } = req.user;
+  const { _id: userId } = req.user;
 
   User
     .findByIdAndUpdate(
-      _id,
+      userId,
       {
         avatar,
       },
