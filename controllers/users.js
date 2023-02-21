@@ -31,7 +31,11 @@ function getUserInfo(req, res) {
 
   User
     .findById(id)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user) return res.send({ data: user });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+    })
     .catch((err) => (
       err.name === 'CastError'
         ? res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' })
