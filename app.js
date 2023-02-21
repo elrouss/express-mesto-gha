@@ -10,10 +10,7 @@ const URL = 'mongodb://localhost:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
 mongoose.set('strictQuery', true);
-mongoose
-  .connect(URL)
-  .then(() => console.log('Соединение с MongoDB установлено'))
-  .catch((err) => console.log(`Возникла ошибка при соединении с MongoDB: ${err}`));
+mongoose.connect(URL);
 
 const app = express();
 
@@ -30,6 +27,4 @@ app.use((req, res, next) => {
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
-app.listen(PORT, (err) => {
-  err ? console.log(`В процессе соединения с портом возникла ошибка: ${err}`) : console.log(`Соединение с портом № ${PORT} успешно установлено`);
-});
+app.listen(PORT);
