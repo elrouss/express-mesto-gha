@@ -38,7 +38,7 @@ function getUserInfo(req, res) {
     })
     .catch((err) => (
       err.name === 'CastError'
-        ? res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' })
+        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Передан некорректный id' })
         : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
     ));
 }
