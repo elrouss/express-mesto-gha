@@ -1,6 +1,10 @@
 const User = require('../models/user');
 
-// TODO => refactor: вынести в отдельную функцию (DRY)
+const {
+  ERROR_INACCURATE_DATA,
+  ERROR_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+} = require('../errors/errors');
 
 function createUser(req, res) {
   const { name, about, avatar } = req.body;
@@ -8,14 +12,18 @@ function createUser(req, res) {
   User
     .create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе создания нового пользователя: ${err}` }));
+    .catch((err) => (
+      err.name === 'ValidationError'
+        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' })
+        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
+    ));
 }
 
 function getUsersInfo(req, res) {
   User
     .find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе получения данных пользователей: ${err}` }));
+    .catch(() => res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' }));
 }
 
 function getUserInfo(req, res) {
@@ -24,7 +32,11 @@ function getUserInfo(req, res) {
   User
     .findById(id)
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Пользователя с таким идентификатором не существует: ${err}` }));
+    .catch((err) => (
+      err.name === 'CastError'
+        ? res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' })
+        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
+    ));
 }
 
 function setUserInfo(req, res) {
@@ -45,7 +57,12 @@ function setUserInfo(req, res) {
       },
     )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Возникла ошибки в процессе изменения данных пользователя: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
+
+      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+    });
 }
 
 function setUserAvatar(req, res) {
@@ -65,7 +82,12 @@ function setUserAvatar(req, res) {
       },
     )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Возникла ошибки в процессе изменения аватара пользователя: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+      if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
+
+      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+    });
 }
 
 module.exports = {

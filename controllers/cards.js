@@ -1,12 +1,16 @@
 const Card = require('../models/card');
 
-// TODO => refactor: вынести в отдельную функцию (DRY)
+const {
+  ERROR_INACCURATE_DATA,
+  ERROR_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+} = require('../errors/errors');
 
 function receiveCards(req, res) {
   Card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе получения данных карточек: ${err}` }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 }
 
 function createCard(req, res) {
@@ -16,7 +20,11 @@ function createCard(req, res) {
   Card
     .create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе создания новой карточки ${err}` }));
+    .catch((err) => (
+      err.name === 'ValidationError'
+        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при создании карточки' })
+        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
+    ));
 }
 
 function likeCard(req, res) {
@@ -37,7 +45,12 @@ function likeCard(req, res) {
       },
     )
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при добавлении лайка: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные для добавления лайка' });
+      if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий id карточки' });
+
+      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+    });
 }
 
 function dislikeCard(req, res) {
@@ -58,7 +71,12 @@ function dislikeCard(req, res) {
       },
     )
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при снятии лайка: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные для снятия лайка' });
+      if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий id карточки' });
+
+      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+    });
 }
 
 function deleteCard(req, res) {
@@ -67,7 +85,11 @@ function deleteCard(req, res) {
   Card
     .findByIdAndRemove(id)
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка в процессе удаления карточки: ${err}` }));
+    .catch((err) => (
+      err.name === 'CastError'
+        ? res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' })
+        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
+    ));
 }
 
 module.exports = {
