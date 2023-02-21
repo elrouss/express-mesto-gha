@@ -60,7 +60,11 @@ function setUserInfo(req, res) {
         upsert: false,
       },
     )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user) return res.send({ data: user });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
@@ -85,7 +89,11 @@ function setUserAvatar(req, res) {
         upsert: false,
       },
     )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user) return res.send({ data: user });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });

@@ -44,7 +44,11 @@ function likeCard(req, res) {
         upsert: false,
       },
     )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card) return res.send({ data: card });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные для добавления лайка' });
       if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий id карточки' });
@@ -70,7 +74,11 @@ function dislikeCard(req, res) {
         upsert: false,
       },
     )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card) return res.send({ data: card });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные для снятия лайка' });
       if (err.name === 'CastError') return res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий id карточки' });
@@ -84,7 +92,11 @@ function deleteCard(req, res) {
 
   Card
     .findByIdAndRemove(id)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card) return res.send({ data: card });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+    })
     .catch((err) => (
       err.name === 'CastError'
         ? res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' })
