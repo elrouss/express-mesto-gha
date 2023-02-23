@@ -12,6 +12,7 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
+  "plugins": ["require"],
   "rules": {
     "no-underscore-dangle": [
       "error",
