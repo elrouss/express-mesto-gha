@@ -57,7 +57,6 @@ function setUserInfo(req, res) {
       {
         new: true,
         runValidators: true,
-        upsert: false,
       },
     )
     .then((user) => {
@@ -91,7 +90,6 @@ function setUserAvatar(req, res) {
       {
         new: true,
         runValidators: true,
-        upsert: false,
       },
     )
     .then((user) => {
