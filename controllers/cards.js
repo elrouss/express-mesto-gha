@@ -41,7 +41,6 @@ function likeCard(req, res) {
       },
       {
         new: true,
-        upsert: false,
       },
     )
     .then((card) => {
@@ -72,7 +71,6 @@ function dislikeCard(req, res) {
       },
       {
         new: true,
-        upsert: false,
       },
     )
     .then((card) => {
