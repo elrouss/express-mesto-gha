@@ -4,6 +4,25 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: (email) => /.+\@.+\..+/.test(email), // TODO: RegExp/validator
+        message: 'Требуется ввести электронный адрес',
+      },
+    },
+
+    password: {
+      type: String,
+      required: true,
+      validate: {
+        validator: ({ length }) => length >= 6,
+        message: 'Пароль должен состоять минимум из 6 символов',
+      },
+    },
+
     name: {
       type: String,
       required: true,
