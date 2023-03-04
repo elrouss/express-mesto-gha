@@ -1,5 +1,7 @@
-const User = require('../models/user');
+// TODO: прописать статусы успешных ответов и сообщения
+const bcrypt = require('bcrypt');
 
+const User = require('../models/user');
 const {
   ERROR_INACCURATE_DATA,
   ERROR_NOT_FOUND,
@@ -7,11 +9,19 @@ const {
 } = require('../errors/errors');
 
 function createUser(req, res) {
-  const { name, about, avatar } = req.body;
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
 
-  User
-    .create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email,
+      password: hash,
+      name,
+      about,
+      avatar,
+    }))
+    .then((user) => res.send({ user }))
     .catch((err) => (
       err.name === 'ValidationError'
         ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' })
@@ -22,7 +32,7 @@ function createUser(req, res) {
 function getUsersInfo(req, res) {
   User
     .find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send({ users }))
     .catch(() => res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' }));
 }
 
@@ -32,7 +42,7 @@ function getUserInfo(req, res) {
   User
     .findById(id)
     .then((user) => {
-      if (user) return res.send({ data: user });
+      if (user) return res.send({ user });
 
       return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
     })
@@ -60,7 +70,7 @@ function setUserInfo(req, res) {
       },
     )
     .then((user) => {
-      if (user) return res.send({ data: user });
+      if (user) return res.send({ user });
 
       return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
     })
@@ -89,7 +99,7 @@ function setUserAvatar(req, res) {
       },
     )
     .then((user) => {
-      if (user) return res.send({ data: user });
+      if (user) return res.send({ user });
 
       return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
     })
