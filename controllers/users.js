@@ -1,5 +1,7 @@
 // TODO: прописать статусы успешных ответов и сообщения
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const User = require('../models/user');
 const {
@@ -8,7 +10,7 @@ const {
   ERROR_INTERNAL_SERVER,
 } = require('../errors/errors');
 
-function createUser(req, res) {
+function registerUser(req, res) {
   const {
     email, password, name, about, avatar,
   } = req.body;
@@ -27,6 +29,24 @@ function createUser(req, res) {
         ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' })
         : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
     ));
+}
+
+function loginUser(req, res) {
+  const { email, password } = req.body;
+  const secretSigningKey = crypto.randomBytes(16).toString('hex');
+
+  User
+    .findUserByCredentials(email, password)
+    .then(({ _id: userId }) => {
+      const token = jwt.sign(
+        { userId },
+        secretSigningKey,
+        { expiresIn: '7d' },
+      );
+
+      res.status(201).send({ _id: token });
+    })
+    .catch(() => res.status(401).send({ message: 'Неправильные почта или пароль' }));
 }
 
 function getUsersInfo(req, res) {
@@ -113,7 +133,8 @@ function setUserAvatar(req, res) {
 }
 
 module.exports = {
-  createUser,
+  registerUser,
+  loginUser,
   getUsersInfo,
   getUserInfo,
   setUserInfo,

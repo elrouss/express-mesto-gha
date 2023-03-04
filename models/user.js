@@ -1,6 +1,7 @@
 // TODO: удалить тексты ошибок из message? Возвращаем дефолтные со статусами
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const { Schema } = mongoose;
 
@@ -52,8 +53,27 @@ const userSchema = new Schema(
       },
     },
   },
+
   {
     versionKey: false,
+    statics: {
+      findUserByCredentials(email, password) {
+        return this
+          .findOne({ email })
+          .then((user) => {
+            if (user) {
+              return bcrypt.compare(password, user.password)
+                .then((matched) => {
+                  if (matched) return user;
+
+                  return Promise.reject();
+                });
+            }
+
+            return Promise.reject();
+          });
+      },
+    },
   },
 );
 
