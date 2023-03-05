@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const { registerUser, loginUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
@@ -23,13 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signup', registerUser);
 app.post('/signin', loginUser);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63f1c61db42c67e928e67f7d',
-  };
+app.use(auth);
 
-  next();
-});
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 

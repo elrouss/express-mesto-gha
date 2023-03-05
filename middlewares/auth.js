@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.body;
+  const { authorization } = req.headers;
   const secretSigningKey = 'afc370ebc683d523988a9fff88c2ffea';
   const bearer = 'Bearer ';
 
