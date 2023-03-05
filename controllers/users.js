@@ -1,7 +1,6 @@
 // TODO: прописать статусы успешных ответов и сообщения
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 
 const User = require('../models/user');
 const {
@@ -33,7 +32,7 @@ function registerUser(req, res) {
 
 function loginUser(req, res) {
   const { email, password } = req.body;
-  const secretSigningKey = crypto.randomBytes(16).toString('hex');
+  const secretSigningKey = 'afc370ebc683d523988a9fff88c2ffea';
 
   User
     .findUserByCredentials(email, password)
