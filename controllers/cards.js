@@ -88,14 +88,18 @@ function dislikeCard(req, res) {
 }
 
 function deleteCard(req, res) {
-  const { id } = req.params;
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
 
   Card
-    .findByIdAndRemove(id)
+    .findOneAndRemove({
+      _id: cardId,
+      owner: userId,
+    })
     .then((card) => {
       if (card) return res.send({ data: card });
 
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' }); // TODO: статусы и тексты ошибок, тернарники
     })
     .catch((err) => (
       err.name === 'CastError'
