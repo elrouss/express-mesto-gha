@@ -15,7 +15,7 @@ function receiveCards(req, res) {
 
 function createCard(req, res) {
   const { name, link } = req.body;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .create({ name, link, owner: userId })
@@ -29,7 +29,7 @@ function createCard(req, res) {
 
 function likeCard(req, res) {
   const { cardId } = req.params;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .findByIdAndUpdate(
@@ -59,7 +59,7 @@ function likeCard(req, res) {
 
 function dislikeCard(req, res) {
   const { cardId } = req.params;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .findByIdAndUpdate(
