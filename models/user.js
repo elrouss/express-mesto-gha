@@ -20,6 +20,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
       validate: {
         validator: ({ length }) => length >= 6,
         message: 'Пароль должен состоять минимум из 6 символов',
@@ -60,6 +61,7 @@ const userSchema = new Schema(
       findUserByCredentials(email, password) {
         return this
           .findOne({ email })
+          .select('+password')
           .then((user) => {
             if (user) {
               return bcrypt.compare(password, user.password)
