@@ -11,7 +11,11 @@ const {
 
 function registerUser(req, res) {
   const {
-    email, password, name, about, avatar,
+    email,
+    password,
+    name,
+    about,
+    avatar,
   } = req.body;
 
   bcrypt.hash(password, 10)
@@ -72,9 +76,26 @@ function getUserInfo(req, res) {
     ));
 }
 
+function getCurrentUserInfo(req, res) {
+  const { userId } = req.user;
+
+  User
+    .findById(userId)
+    .then((user) => {
+      if (user) return res.send({ user });
+
+      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+    })
+    .catch((err) => (
+      err.name === 'CastError'
+        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Передан некорректный id' })
+        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
+    ));
+}
+
 function setUserInfo(req, res) {
   const { name, about } = req.body;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   User
     .findByIdAndUpdate(
@@ -104,7 +125,7 @@ function setUserInfo(req, res) {
 
 function setUserAvatar(req, res) {
   const { avatar } = req.body;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   User
     .findByIdAndUpdate(
@@ -134,8 +155,11 @@ function setUserAvatar(req, res) {
 module.exports = {
   registerUser,
   loginUser,
+
   getUsersInfo,
   getUserInfo,
+  getCurrentUserInfo,
+
   setUserInfo,
   setUserAvatar,
 };
