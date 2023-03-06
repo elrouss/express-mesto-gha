@@ -39,9 +39,6 @@ router.patch('/me', celebrate({
 }), setUserInfo);
 
 router.patch('/me/avatar', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(),
   body: Joi.object().keys({
     avatar: Joi.string().uri(),
   }),
