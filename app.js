@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
 const { registerUser, loginUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -28,6 +29,8 @@ app.use(auth);
 
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
+
+app.use(errors);
 
 app.use((err, req, res, next) => {
   if (err.name === 'CastError' || err.name === 'ValidationError') {
