@@ -1,15 +1,13 @@
-// TODO: прописать статусы успешных ответов и сообщения
+// TODO: Пользователь не может менять чужой аватар и нейм
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
-const {
-  ERROR_INACCURATE_DATA,
-  ERROR_NOT_FOUND,
-  ERROR_INTERNAL_SERVER,
-} = require('../errors/errors');
+const UnauthorizedError = require('../errors/Unauthorized');
+const NotFoundError = require('../errors/NotFound');
 
-function registerUser(req, res) {
+const User = require('../models/user');
+
+function registerUser(req, res, next) {
   const {
     email,
     password,
@@ -26,74 +24,66 @@ function registerUser(req, res) {
       about,
       avatar,
     }))
-    .then((user) => res.send({ user }))
-    .catch((err) => (
-      err.name === 'ValidationError'
-        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' })
-        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
-    ));
+    .then((user) => res.status(201).send({ user }))
+    .catch(next);
 }
 
-function loginUser(req, res) {
+function loginUser(req, res, next) {
   const { email, password } = req.body;
-  const secretSigningKey = 'afc370ebc683d523988a9fff88c2ffea';
+  const secretSigningKey = 'U2FsdGVkX19nV2KreWqHk1BGD+ojOGgl39N93rtj1DVVSeYcdNPGnAQt4PtU2FvJrEiPtoQRACJ0B/yIORhjvQ==';
 
   User
     .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
-      const token = jwt.sign(
-        { userId },
-        secretSigningKey,
-        { expiresIn: '7d' },
-      );
+      if (userId) {
+        const token = jwt.sign(
+          { userId },
+          secretSigningKey,
+          { expiresIn: '7d' },
+        );
 
-      res.status(201).send({ _id: token });
+        res.status(200).send({ _id: token });
+      }
+
+      throw new UnauthorizedError('Неправильные почта или пароль');
     })
-    .catch(() => res.status(401).send({ message: 'Неправильные почта или пароль' }));
+    .catch(next);
 }
 
-function getUsersInfo(req, res) {
+function getUsersInfo(req, res, next) {
   User
     .find({})
-    .then((users) => res.send({ users }))
-    .catch(() => res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' }));
+    .then((users) => res.status(200).send({ users }))
+    .catch(next);
 }
 
-function getUserInfo(req, res) {
+function getUserInfo(req, res, next) {
   const { id } = req.params;
 
   User
     .findById(id)
     .then((user) => {
-      if (user) return res.send({ user });
+      if (user) return res.status(200).send({ user });
 
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+      throw new NotFoundError('Данные по указанному id не найдены');
     })
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Передан некорректный id' })
-        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
-    ));
+    .catch(next);
 }
 
-function getCurrentUserInfo(req, res) {
+function getCurrentUserInfo(req, res, next) {
   const { userId } = req.user;
 
   User
     .findById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
+      if (user) return res.status(200).send({ user });
 
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+      throw new NotFoundError('Данные по указанному id не найдены');
     })
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(ERROR_INACCURATE_DATA).send({ message: 'Передан некорректный id' })
-        : res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' })
-    ));
+    .catch(next);
 }
 
-function setUserInfo(req, res) {
+function setUserInfo(req, res, next) {
   const { name, about } = req.body;
   const { userId } = req.user;
 
@@ -110,20 +100,14 @@ function setUserInfo(req, res) {
       },
     )
     .then((user) => {
-      if (user) return res.send({ user });
+      if (user) return res.status(200).send({ user });
 
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+      throw new NotFoundError('Данные по указанному id не найдены');
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      }
-
-      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 }
 
-function setUserAvatar(req, res) {
+function setUserAvatar(req, res, next) {
   const { avatar } = req.body;
   const { userId } = req.user;
 
@@ -139,17 +123,11 @@ function setUserAvatar(req, res) {
       },
     )
     .then((user) => {
-      if (user) return res.send({ user });
+      if (user) return res.status(200).send({ user });
 
-      return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному id не найден' });
+      throw new NotFoundError('Данные по указанному id не найдены');
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(ERROR_INACCURATE_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' });
-      }
-
-      return res.status(ERROR_INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 }
 
 module.exports = {

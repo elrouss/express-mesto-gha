@@ -8,8 +8,6 @@ const auth = require('./middlewares/auth');
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
 
-const { ERROR_NOT_FOUND } = require('./errors/errors');
-
 const URL = 'mongodb://localhost:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
@@ -24,13 +22,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signup', registerUser);
 app.post('/signin', loginUser);
 
+// TODO: несуществующую страницу?
+
 app.use(auth);
 
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
-app.use((req, res) => {
-  res.status(ERROR_NOT_FOUND).send({ message: 'Страницы по запрошенному URL не существует' });
+app.use((err, req, res, next) => {
+  if (err.name === 'CastError' || err.name === 'ValidationError') {
+    const { statusCode = 400 } = err;
+
+    res.status(statusCode).send({ message: 'Переданы некорректные данные' });
+  }
+
+  if (err.name === 'Error') res.status(err.statusCode).send({ message: err.message });
+
+  if (err.code === 11000) {
+    const { statusCode = 409 } = err;
+
+    res.status(statusCode).send({ message: 'Пользователь с таким электронным адресом уже зарегистрирован' });
+  }
+
+  const { statusCode = 500 } = err;
+  res.status(statusCode).send({ message: 'На сервере произошла ошибка' });
 });
 
 app.listen(PORT);

@@ -16,7 +16,7 @@ const cardSchema = new Schema(
 
     link: {
       type: String,
-      required: true,
+      required: true, // TODO: валидация ссылки
     },
 
     owner: {

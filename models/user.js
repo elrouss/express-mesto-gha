@@ -1,5 +1,3 @@
-// TODO: удалить тексты ошибок из message? Возвращаем дефолтные со статусами
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
