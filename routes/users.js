@@ -10,33 +10,16 @@ const {
   setUserAvatar,
 } = require('../controllers/users');
 
-router.get('/', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(),
-}), getUsersInfo);
-
-router.get('/me', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(),
-}), getCurrentUserInfo);
+router.get('/', getUsersInfo);
+router.get('/me', getCurrentUserInfo);
 
 router.get('/:id', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(),
-
   params: Joi.object().keys({
     id: Joi.string().min(24).max(24),
   }),
 }), getUserInfo);
 
 router.patch('/me', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(),
-
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
