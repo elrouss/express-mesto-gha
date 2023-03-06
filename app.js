@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const { registerUser, loginUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -20,10 +20,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// TODO: celebrate & joi -> провалидировать вход
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), registerUser);
 
-app.post('/signup', registerUser);
-app.post('/signin', loginUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), loginUser);
 
 // TODO: несуществующую страницу?
 
