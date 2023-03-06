@@ -19,7 +19,7 @@ function createCard(req, res, next) {
     .catch(next);
 }
 
-function likeCard(req, res, next) { // TODO: Проверить, что пользователь может ставить и снимать не более 1 лайка
+function likeCard(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
