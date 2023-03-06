@@ -24,7 +24,17 @@ function registerUser(req, res, next) {
       about,
       avatar,
     }))
-    .then((user) => res.status(201).send({ user }))
+    .then((user) => {
+      const { _id } = user;
+
+      res.status(201).send({
+        email,
+        name,
+        about,
+        avatar,
+        _id,
+      });
+    })
     .catch(next);
 }
 
