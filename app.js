@@ -9,6 +9,8 @@ const auth = require('./middlewares/auth');
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
 
+const NotFoundError = require('./errors/NotFound');
+
 const URL = 'mongodb://localhost:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
@@ -39,12 +41,12 @@ app.post('/signin', celebrate({
   }),
 }), loginUser);
 
-// TODO: несуществующую страницу?
-
 app.use(auth);
 
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
+
+app.use((req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
 
 app.use(errors());
 
@@ -64,7 +66,7 @@ app.use((err, req, res, next) => {
   }
 
   const { statusCode = 500 } = err;
-  return res.status(statusCode).send({ message: 'На сервере произошла ошибка' });
+  return next(res.status(statusCode).send({ message: 'На сервере произошла ошибка' }));
 });
 
 app.listen(PORT);
