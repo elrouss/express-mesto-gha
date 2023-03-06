@@ -1,4 +1,3 @@
-// TODO: Пользователь не может менять чужой аватар и нейм
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 

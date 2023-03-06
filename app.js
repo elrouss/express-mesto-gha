@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
+const limiter = require('./middlewares/rateLimiter');
+
 const routeSignup = require('./routes/signup');
 const routeSignin = require('./routes/signin');
 
@@ -23,6 +25,8 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(limiter);
 
 app.use('/', routeSignup);
 app.use('/', routeSignin);
