@@ -52,19 +52,19 @@ app.use((err, req, res, next) => {
   if (err.name === 'CastError' || err.name === 'ValidationError') {
     const { statusCode = 400 } = err;
 
-    res.status(statusCode).send({ message: 'Переданы некорректные данные' });
+    return res.status(statusCode).send({ message: 'Переданы некорректные данные' });
   }
 
-  if (err.name === 'Error') res.status(err.statusCode).send({ message: err.message });
+  if (err.name === 'Error') return res.status(err.statusCode).send({ message: err.message });
 
   if (err.code === 11000) {
     const { statusCode = 409 } = err;
 
-    res.status(statusCode).send({ message: 'Пользователь с таким электронным адресом уже зарегистрирован' });
+    return res.status(statusCode).send({ message: 'Пользователь с таким электронным адресом уже зарегистрирован' });
   }
 
   const { statusCode = 500 } = err;
-  res.status(statusCode).send({ message: 'На сервере произошла ошибка' });
+  return res.status(statusCode).send({ message: 'На сервере произошла ошибка' });
 });
 
 app.listen(PORT);

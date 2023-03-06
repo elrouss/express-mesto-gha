@@ -27,7 +27,7 @@ function registerUser(req, res, next) {
     .then((user) => {
       const { _id } = user;
 
-      res.status(201).send({
+      return res.status(201).send({
         email,
         name,
         about,
@@ -52,7 +52,7 @@ function loginUser(req, res, next) {
           { expiresIn: '7d' },
         );
 
-        res.status(200).send({ _id: token });
+        return res.status(200).send({ _id: token });
       }
 
       throw new UnauthorizedError('Неправильные почта или пароль');
