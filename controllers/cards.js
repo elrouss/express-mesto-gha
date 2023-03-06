@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 
+const ForbiddenError = require('../errors/Forbidden');
 const NotFoundError = require('../errors/NotFound');
 
 function receiveCards(req, res, next) {
@@ -72,14 +73,18 @@ function deleteCard(req, res, next) {
   const { userId } = req.user;
 
   Card
-    .findOneAndRemove({
+    .findById({
       _id: cardId,
-      owner: userId,
     })
     .then((card) => {
-      if (card) return res.status(200).send({ data: card });
+      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
 
-      throw new NotFoundError('Данные по указанному id не найдены');
+      const { owner: cardOwnerId } = card;
+      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
+
+      card
+        .remove()
+        .then(() => res.status(200).send({ data: card }));
     })
     .catch(next);
 }
