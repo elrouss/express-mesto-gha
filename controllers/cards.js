@@ -3,7 +3,7 @@ const Card = require('../models/card');
 const ForbiddenError = require('../errors/Forbidden');
 const NotFoundError = require('../errors/NotFound');
 
-function receiveCards(req, res, next) {
+function receiveCards(_, res, next) {
   Card
     .find({})
     .then((cards) => res.status(200).send({ data: cards }))

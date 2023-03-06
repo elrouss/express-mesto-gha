@@ -50,7 +50,7 @@ app.use((req, res, next) => next(new NotFoundError('Страницы по зап
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
+app.use((err, _, res, next) => {
   if (err.name === 'CastError' || err.name === 'ValidationError') {
     const { statusCode = 400 } = err;
 

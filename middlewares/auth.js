@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const UnauthorizedError = require('../errors/Unauthorized');
 
-module.exports = (req, res, next) => {
+module.exports = (req, _, next) => {
   const { authorization } = req.headers;
   const secretSigningKey = 'U2FsdGVkX19nV2KreWqHk1BGD+ojOGgl39N93rtj1DVVSeYcdNPGnAQt4PtU2FvJrEiPtoQRACJ0B/yIORhjvQ==';
   const bearer = 'Bearer ';

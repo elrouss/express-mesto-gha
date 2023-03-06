@@ -60,7 +60,7 @@ function loginUser(req, res, next) {
     .catch(next);
 }
 
-function getUsersInfo(req, res, next) {
+function getUsersInfo(_, res, next) {
   User
     .find({})
     .then((users) => res.status(200).send({ users }))
