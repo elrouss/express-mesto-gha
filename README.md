@@ -1,5 +1,5 @@
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml)
-<!-- [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml) -->
+<!-- [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) -->
+[![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
 <h1 align="center">Учебный backend-проект: "Место"</h1>
 
 <div align="center">
@@ -17,7 +17,7 @@
       <li><a href="#installation">Установка и запуск приложения в локальном репозитории, эксплуатация</a></li>
       <li><a href="#establishing">Процесс создания</a></li>
       <li><a href="#functionality">Функционал</a></li>
-      <li><a href="#enhancement">Планы по улучшению</a></li>
+      <li><a href="#enhancement">Статус проекта</a></li>
     </ol>
   </details>
 </a>
@@ -28,7 +28,12 @@
 <h4>
 Ссылка на проект: https://github.com/elrouss/express-mesto-gha
 <br>
-Чеклист: https://code.s3.yandex.net/web-developer/checklists-pdf/new-program/checklist_13.pdf
+<br>
+Чеклисты:
+<br>
+https://code.s3.yandex.net/web-developer/checklists-pdf/new-program/checklist_14.pdf
+<br>
+https://code.s3.yandex.net/web-developer/checklists-pdf/new-program/checklist_13.pdf
 </h4>
 
 <i>* - проект прошел код-ревью</i>
@@ -56,13 +61,14 @@
 Работа выполнена в <b>2 этапа</b>:
 <br>
 1. Написание схем, контроллеров и моделей (users & cards), подключение запросов с методами api (см. <a href="#functionality">ниже</a>), добавление кодов и текстов ошибок при неуспешных запросах (400, 404, 500)
-2. На этапе разработки
+2. Расширение схем и контроллеров (users & cards), добавление функций регистрации и авторизации пользователей, добавление предварительного этапа валидации данных (celebrate & joi), обработка новых ошибок в едином обработчике (401, 403 и 409), обеспечение безопасности приложения (хэширование паролей пользователей, защита от DoS-атак, настройка заголовков HTTP)
 
 <div align="right">(<a href="#summary">к оглавлению</a>)</div>
 
 <a name="functionality"><h2>5. Функционал</h2></a>
-- Cоздание пользователя
-- Получение данных о всех пользователях и об одном
+- Регистрация пользователя
+- Авторизация пользователя
+- Получение данных о всех пользователях, об одном и о текущем авторизованном
 - Редактирование данных пользователя
 
 - Создание карточки
@@ -72,10 +78,8 @@
 
 <div align="right">(<a href="#summary">к оглавлению</a>)</div>
 
-<a name="enhancement"><h2>6. Планы по улучшению</h2></a>
-- Защита приложения от DoS-атак
-- Использование helmet для защиты приложения от некоторых широко известных веб-уязвимостей путем соответствующей настройки заголовков HTTP
-- Прописать номера статусов успешных ответов
+<a name="enhancement"><h2>6. Статус проекта</h2></a>
+Проект завершен
 
 <div align="right">(<a href="#summary">к оглавлению</a>)</div>
 
