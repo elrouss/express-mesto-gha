@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 
+const { SECRET_SIGNING_KEY } = require('../utils/constants');
 const UnauthorizedError = require('../errors/Unauthorized');
 
 module.exports = (req, _, next) => {
   const { authorization } = req.headers;
-  const secretSigningKey = 'U2FsdGVkX19nV2KreWqHk1BGD+ojOGgl39N93rtj1DVVSeYcdNPGnAQt4PtU2FvJrEiPtoQRACJ0B/yIORhjvQ==';
   const bearer = 'Bearer ';
 
   if (!authorization || !authorization.startsWith(bearer)) {
@@ -15,7 +15,7 @@ module.exports = (req, _, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, secretSigningKey);
+    payload = jwt.verify(token, SECRET_SIGNING_KEY);
   } catch (err) {
     return next(new UnauthorizedError('Неправильные почта или пароль'));
   }
