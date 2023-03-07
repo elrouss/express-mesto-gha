@@ -3,13 +3,6 @@ const Card = require('../models/card');
 const ForbiddenError = require('../errors/Forbidden');
 const NotFoundError = require('../errors/NotFound');
 
-function receiveCards(_, res, next) {
-  Card
-    .find({})
-    .then((cards) => res.status(200).send({ data: cards }))
-    .catch(next);
-}
-
 function createCard(req, res, next) {
   const { name, link } = req.body;
   const { userId } = req.user;
@@ -17,6 +10,14 @@ function createCard(req, res, next) {
   Card
     .create({ name, link, owner: userId })
     .then((card) => res.status(201).send({ data: card }))
+    .catch(next);
+}
+
+function receiveCards(_, res, next) {
+  Card
+    .find({})
+    .populate(['owner', 'likes'])
+    .then((cards) => res.status(200).send({ data: cards }))
     .catch(next);
 }
 
@@ -90,9 +91,11 @@ function deleteCard(req, res, next) {
 }
 
 module.exports = {
-  receiveCards,
   createCard,
+
+  receiveCards,
   likeCard,
   dislikeCard,
+
   deleteCard,
 };
