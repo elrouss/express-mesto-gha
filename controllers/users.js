@@ -51,7 +51,7 @@ function loginUser(req, res, next) {
           { expiresIn: '7d' },
         );
 
-        return res.status(200).send({ _id: token });
+        return res.send({ _id: token });
       }
 
       throw new UnauthorizedError('Неправильные почта или пароль');
@@ -62,7 +62,7 @@ function loginUser(req, res, next) {
 function getUsersInfo(_, res, next) {
   User
     .find({})
-    .then((users) => res.status(200).send({ users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 }
 
@@ -72,7 +72,7 @@ function getUserInfo(req, res, next) {
   User
     .findById(id)
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })
@@ -85,7 +85,7 @@ function getCurrentUserInfo(req, res, next) {
   User
     .findById(userId)
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })
@@ -109,7 +109,7 @@ function setUserInfo(req, res, next) {
       },
     )
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })
@@ -132,7 +132,7 @@ function setUserAvatar(req, res, next) {
       },
     )
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })

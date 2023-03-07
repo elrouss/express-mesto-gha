@@ -17,7 +17,7 @@ function receiveCards(_, res, next) {
   Card
     .find({})
     .populate(['owner', 'likes'])
-    .then((cards) => res.status(200).send({ data: cards }))
+    .then((cards) => res.send({ data: cards }))
     .catch(next);
 }
 
@@ -38,7 +38,7 @@ function likeCard(req, res, next) {
       },
     )
     .then((card) => {
-      if (card) return res.status(200).send({ data: card });
+      if (card) return res.send({ data: card });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })
@@ -62,7 +62,7 @@ function dislikeCard(req, res, next) {
       },
     )
     .then((card) => {
-      if (card) return res.status(200).send({ data: card });
+      if (card) return res.send({ data: card });
 
       throw new NotFoundError('Данные по указанному id не найдены');
     })
@@ -85,7 +85,7 @@ function deleteCard(req, res, next) {
 
       card
         .remove()
-        .then(() => res.status(200).send({ data: card }));
+        .then(() => res.send({ data: card }));
     })
     .catch(next);
 }
