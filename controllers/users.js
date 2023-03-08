@@ -1,10 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const UnauthorizedError = require('../errors/Unauthorized');
-const NotFoundError = require('../errors/NotFound');
+const { SECRET_SIGNING_KEY } = require('../utils/constants');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 
 const User = require('../models/user');
+const InaccurateDataError = require('../errors/InaccurateDataError');
 
 function registerUser(req, res, next) {
   const {
@@ -34,12 +37,19 @@ function registerUser(req, res, next) {
         _id,
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким электронным адресом уже зарегистрирован'));
+      } else if (err.name === 'ValidationError') {
+        next(new InaccurateDataError('Переданы некорректные данные при регистрации пользователя'));
+      } else {
+        next(err);
+      }
+    });
 }
 
 function loginUser(req, res, next) {
   const { email, password } = req.body;
-  const secretSigningKey = 'U2FsdGVkX19nV2KreWqHk1BGD+ojOGgl39N93rtj1DVVSeYcdNPGnAQt4PtU2FvJrEiPtoQRACJ0B/yIORhjvQ==';
 
   User
     .findUserByCredentials(email, password)
@@ -47,11 +57,11 @@ function loginUser(req, res, next) {
       if (userId) {
         const token = jwt.sign(
           { userId },
-          secretSigningKey,
+          SECRET_SIGNING_KEY,
           { expiresIn: '7d' },
         );
 
-        return res.status(200).send({ _id: token });
+        return res.send({ _id: token });
       }
 
       throw new UnauthorizedError('Неправильные почта или пароль');
@@ -62,7 +72,7 @@ function loginUser(req, res, next) {
 function getUsersInfo(_, res, next) {
   User
     .find({})
-    .then((users) => res.status(200).send({ users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 }
 
@@ -72,11 +82,17 @@ function getUserInfo(req, res, next) {
   User
     .findById(id)
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
-      throw new NotFoundError('Данные по указанному id не найдены');
+      throw new NotFoundError('Пользователь с таким id не найден');
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new InaccurateDataError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
 }
 
 function getCurrentUserInfo(req, res, next) {
@@ -85,11 +101,17 @@ function getCurrentUserInfo(req, res, next) {
   User
     .findById(userId)
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
-      throw new NotFoundError('Данные по указанному id не найдены');
+      throw new NotFoundError('Пользователь с таким id не найден');
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new InaccurateDataError('Передан некорректный id'));
+      } else {
+        next(err);
+      }
+    });
 }
 
 function setUserInfo(req, res, next) {
@@ -109,11 +131,17 @@ function setUserInfo(req, res, next) {
       },
     )
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
-      throw new NotFoundError('Данные по указанному id не найдены');
+      throw new NotFoundError('Пользователь с таким id не найден');
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new InaccurateDataError('Переданы некорректные данные при обновлении профиля пользователя'));
+      } else {
+        next(err);
+      }
+    });
 }
 
 function setUserAvatar(req, res, next) {
@@ -132,11 +160,17 @@ function setUserAvatar(req, res, next) {
       },
     )
     .then((user) => {
-      if (user) return res.status(200).send({ user });
+      if (user) return res.send({ user });
 
-      throw new NotFoundError('Данные по указанному id не найдены');
+      throw new NotFoundError('Пользователь с таким id не найден');
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new InaccurateDataError('Переданы некорректные данные при обновлении профиля пользователя'));
+      } else {
+        next(err);
+      }
+    });
 }
 
 module.exports = {
